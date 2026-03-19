@@ -332,8 +332,13 @@ async function main() {
     currentTvlADA = adaPrice > 0 ? currentTvlUSD / adaPrice : 0;
     currentPct = (currentTvlADA / TOTAL_STAKED_ADA) * 100;
 
+    // % of all ADA (including unstaked) in DeFi
+    const allAdaPct = (currentTvlADA / CARDANO_CIRCULATING_SUPPLY) * 100;
+
     $('cardano-pct').textContent = currentPct.toFixed(2) + '%';
     $('cardano-detail').textContent = fmt(currentTvlADA) + ' ADA deployed out of ' + fmt(TOTAL_STAKED_ADA) + ' staked ADA';
+    $('all-ada-pct').textContent = allAdaPct.toFixed(2) + '%';
+    $('all-ada-detail').textContent = fmt(currentTvlADA) + ' ADA deployed out of ' + fmt(CARDANO_CIRCULATING_SUPPLY) + ' circulating ADA';
     $('tvl-usd').textContent = '$' + fmt(currentTvlUSD);
     $('tvl-ada').textContent = fmt(currentTvlADA) + ' ADA';
     $('staked-ada').textContent = fmt(TOTAL_STAKED_ADA) + ' ADA';

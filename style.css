@@ -82,6 +82,22 @@ main {
   }
 }
 
+.card.highlight-secondary {
+  grid-column: 1 / -1;
+  border-color: #a78bfa;
+  background: linear-gradient(135deg, rgba(167,139,250,0.08), rgba(59,130,246,0.08));
+}
+
+@media (min-width: 700px) {
+  .card.highlight-secondary {
+    grid-column: span 2;
+  }
+}
+
+.card.highlight-secondary .big-number {
+  color: #a78bfa;
+}
+
 .big-number {
   font-size: 2.8rem;
   font-weight: 800;

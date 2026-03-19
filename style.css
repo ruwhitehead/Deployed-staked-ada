@@ -40,6 +40,42 @@ header h1 {
   font-size: 0.95rem;
 }
 
+.header-actions {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--accent-light);
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-weight: 500;
+}
+
+.action-btn:hover {
+  border-color: var(--accent-light);
+  background: rgba(59,130,246,0.1);
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.data-status {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
 main {
   max-width: 1200px;
   margin: 0 auto;
@@ -209,6 +245,75 @@ main {
   margin-top: 0.5rem;
 }
 
+/* Protocol layout */
+.protocol-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .protocol-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.protocol-pie {
+  height: 360px;
+}
+
+.protocol-table-wrapper {
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.protocol-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 0.85rem;
+}
+
+.protocol-table th {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--accent-light);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  position: sticky;
+  top: 0;
+}
+
+.protocol-table td {
+  padding: 0.45rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.protocol-table tr:last-child td {
+  border-bottom: none;
+}
+
+.protocol-table tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.protocol-color {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
 /* Duration selector */
 .duration-selector {
   display: flex;
@@ -320,3 +425,13 @@ footer {
 }
 
 footer p { margin-bottom: 0.25rem; }
+
+/* Loading spinner for refresh */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinning {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}

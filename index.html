@@ -7,14 +7,20 @@
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
 </head>
 <body>
   <header>
     <h1>Deployed Staked ADA Dashboard</h1>
     <p class="subtitle">Tracking how much staked ADA is actively deployed in Cardano DeFi</p>
+    <div class="header-actions">
+      <button id="refresh-btn" class="action-btn" title="Refresh data">Refresh Data</button>
+      <button id="export-btn" class="action-btn" title="Export dashboard as PNG">Export PNG</button>
+      <span class="data-status" id="data-status"></span>
+    </div>
   </header>
 
-  <main>
+  <main id="dashboard-main">
     <!-- Current Snapshot -->
     <section class="snapshot">
       <div class="card highlight">
@@ -40,6 +46,7 @@
       <div class="card">
         <h2>Total Staked ADA</h2>
         <div class="big-number secondary" id="staked-ada">&mdash;</div>
+        <p class="detail" id="staking-ratio-detail"></p>
       </div>
       <div class="card highlight-value">
         <h2>Staked ADA Value (USD)</h2>
@@ -62,7 +69,7 @@
       <h3>Methodology</h3>
       <p><strong>Cardano Deployed %</strong> = (DeFi TVL in ADA &divide; Total Staked ADA) &times; 100</p>
       <p><strong>Other Ecosystems</strong> = (DeFi TVL in USD &divide; Market Cap) &times; 100</p>
-      <p class="sources">Data: <a href="https://defillama.com/chain/Cardano" target="_blank">DefiLlama</a> (TVL), <a href="https://www.coingecko.com/" target="_blank">CoinGecko</a> (prices &amp; market caps), <a href="https://cexplorer.io/" target="_blank">Cexplorer</a> (staking reference). Staking ratio assumed at 60% of 36B circulating supply.</p>
+      <p class="sources">Data: <a href="https://defillama.com/chain/Cardano" target="_blank">DefiLlama</a> (TVL &amp; protocols), <a href="https://www.coingecko.com/" target="_blank">CoinGecko</a> (prices &amp; market caps), <a href="https://api.koios.rest/" target="_blank">Koios</a> (live Cardano staking data). <span id="staking-source"></span></p>
     </section>
 
     <!-- Chart 1: Cardano historical -->
@@ -103,6 +110,27 @@
       <p class="chart-note" id="all-ada-chart-status">Loading historical data&hellip;</p>
     </section>
 
+    <!-- Chart: Protocol breakdown -->
+    <section class="chart-section">
+      <h2>Cardano DeFi TVL by Protocol</h2>
+      <div class="protocol-layout">
+        <div class="chart-container protocol-pie">
+          <canvas id="protocol-chart"></canvas>
+        </div>
+        <div class="protocol-table-wrapper">
+          <table class="protocol-table">
+            <thead>
+              <tr><th>Protocol</th><th>TVL (USD)</th><th>Share</th></tr>
+            </thead>
+            <tbody id="protocol-tbody">
+              <tr><td colspan="3" style="text-align:center;color:#9ca3af">Loading&hellip;</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="chart-note">Source: DefiLlama protocols API. Shows where deployed ADA is concentrated.</p>
+    </section>
+
     <!-- Chart 2: Multi-chain comparison -->
     <section class="chart-section">
       <h2>Ecosystem Comparison: TVL / Market Cap Over Time (Monthly)</h2>
@@ -110,6 +138,15 @@
         <canvas id="comparison-chart"></canvas>
       </div>
       <p class="chart-note">Deployment % = TVL &divide; Market Cap for all chains (consistent metric). Monthly data points over the last 12 months. Chain names shown at end of each line.</p>
+    </section>
+
+    <!-- 2030 Target Trajectory -->
+    <section class="chart-section">
+      <h2>Path to $3B TVL Target (2030)</h2>
+      <div class="chart-container">
+        <canvas id="target-chart"></canvas>
+      </div>
+      <p class="chart-note">Blue dashed line shows the required growth trajectory from current TVL to the 2030 target of $3B. Teal line shows actual TVL history.</p>
     </section>
 
     <!-- Impact Table -->

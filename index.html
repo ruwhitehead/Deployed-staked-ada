@@ -21,11 +21,13 @@
         <h2>Cardano: Staked ADA Deployed in DeFi</h2>
         <div class="big-number" id="cardano-pct">Loading&hellip;</div>
         <p class="detail" id="cardano-detail"></p>
+        <p class="detail usd-equiv" id="cardano-usd-equiv"></p>
       </div>
       <div class="card highlight-secondary">
         <h2>% of All ADA in DeFi (incl. unstaked)</h2>
         <div class="big-number" id="all-ada-pct">Loading&hellip;</div>
         <p class="detail" id="all-ada-detail"></p>
+        <p class="detail usd-equiv" id="all-ada-usd-equiv"></p>
       </div>
       <div class="card">
         <h2>TVL (USD)</h2>
@@ -80,6 +82,25 @@
         <canvas id="cardano-chart"></canvas>
       </div>
       <p class="chart-note" id="cardano-chart-status">Loading historical data&hellip;</p>
+    </section>
+
+    <!-- Chart 1b: All ADA in DeFi historical -->
+    <section class="chart-section">
+      <div class="chart-header">
+        <h2>Cardano: % of All ADA in DeFi (incl. unstaked) Over Time (Weekly)</h2>
+        <div class="duration-selector" id="all-ada-duration-selector">
+          <button class="duration-btn-b active" data-weeks="0">All Time</button>
+          <button class="duration-btn-b" data-weeks="104">2 Years</button>
+          <button class="duration-btn-b" data-weeks="52">1 Year</button>
+          <button class="duration-btn-b" data-weeks="26">6 Months</button>
+          <button class="duration-btn-b" data-weeks="12">3 Months</button>
+          <button class="duration-btn-b" data-weeks="8">8 Weeks</button>
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="all-ada-chart"></canvas>
+      </div>
+      <p class="chart-note" id="all-ada-chart-status">Loading historical data&hellip;</p>
     </section>
 
     <!-- Chart 2: Multi-chain comparison -->

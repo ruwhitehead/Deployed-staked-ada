@@ -92,7 +92,9 @@ async function getHistoricalMarketData(geckoId) {
 
 // ── Chart state ────────────────────────────────────────────────────────────
 let cardanoChartInstance = null;
+let allAdaChartInstance = null;
 let cardanoAllDailyData = [];
+let allAdaAllDailyData = [];
 
 function filterByDuration(data, weeks) {
   if (weeks === 0) return data;
@@ -164,6 +166,64 @@ function renderCardanoChart(weeklyData) {
         },
         y: {
           title: { display: true, text: '% Deployed', color: '#9ca3af' },
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: { color: '#9ca3af', callback: v => v.toFixed(2) + '%' },
+        }
+      },
+      plugins: {
+        legend: { labels: { color: '#e4e4e7' } },
+        tooltip: { callbacks: { label: c => c.dataset.label + ': ' + c.parsed.y.toFixed(3) + '%' } },
+      }
+    }
+  });
+}
+
+function renderAllAdaChart(weeklyData) {
+  if (allAdaChartInstance) allAdaChartInstance.destroy();
+
+  const canvas = $('all-ada-chart');
+  if (weeklyData.length === 0) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '14px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('No data available for selected range', canvas.width / 2, canvas.height / 2);
+    return;
+  }
+
+  allAdaChartInstance = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: weeklyData.map(d => d.date),
+      datasets: [{
+        label: '% of All ADA in DeFi',
+        data: weeklyData.map(d => d.pct),
+        borderColor: '#a78bfa',
+        backgroundColor: 'rgba(167, 139, 250, 0.1)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: weeklyData.length < 30 ? 4 : 0,
+        pointHitRadius: 10,
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        x: {
+          type: 'time',
+          time: {
+            unit: weeklyData.length < 20 ? 'week' : 'month',
+            tooltipFormat: 'dd MMM yyyy',
+          },
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: { color: '#9ca3af' },
+        },
+        y: {
+          title: { display: true, text: '% of All ADA in DeFi', color: '#9ca3af' },
           grid: { color: 'rgba(255,255,255,0.05)' },
           ticks: { color: '#9ca3af', callback: v => v.toFixed(2) + '%' },
         }
@@ -302,6 +362,7 @@ function renderImpactTable(currentTvlUSD, currentTvlADA, adaPrice, currentPct) {
 
 // ── Duration selector ──────────────────────────────────────────────────────
 function setupDurationSelector() {
+  // Staked ADA chart duration buttons
   document.querySelectorAll('.duration-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('active'));
@@ -310,6 +371,18 @@ function setupDurationSelector() {
       const filtered = filterByDuration(cardanoAllDailyData, weeks);
       const weekly = sampleToWeekly(filtered);
       renderCardanoChart(weekly);
+    });
+  });
+
+  // All ADA chart duration buttons
+  document.querySelectorAll('.duration-btn-b').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.duration-btn-b').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const weeks = parseInt(btn.dataset.weeks);
+      const filtered = filterByDuration(allAdaAllDailyData, weeks);
+      const weekly = sampleToWeekly(filtered);
+      renderAllAdaChart(weekly);
     });
   });
 }
@@ -337,8 +410,10 @@ async function main() {
 
     $('cardano-pct').textContent = currentPct.toFixed(2) + '%';
     $('cardano-detail').textContent = fmt(currentTvlADA) + ' ADA deployed out of ' + fmt(TOTAL_STAKED_ADA) + ' staked ADA';
+    $('cardano-usd-equiv').textContent = 'TVL: $' + fmt(currentTvlUSD) + ' deployed out of $' + fmt(TOTAL_STAKED_ADA * adaPrice) + ' staked';
     $('all-ada-pct').textContent = allAdaPct.toFixed(2) + '%';
     $('all-ada-detail').textContent = fmt(currentTvlADA) + ' ADA deployed out of ' + fmt(CARDANO_CIRCULATING_SUPPLY) + ' circulating ADA';
+    $('all-ada-usd-equiv').textContent = 'TVL: $' + fmt(currentTvlUSD) + ' deployed out of $' + fmt(CARDANO_CIRCULATING_SUPPLY * adaPrice) + ' market cap';
     $('tvl-usd').textContent = '$' + fmt(currentTvlUSD);
     $('tvl-ada').textContent = fmt(currentTvlADA) + ' ADA';
     $('staked-ada').textContent = fmt(TOTAL_STAKED_ADA) + ' ADA';
@@ -390,15 +465,18 @@ async function main() {
 
     // Build daily deployed % by matching TVL dates with price dates
     cardanoAllDailyData = [];
+    allAdaAllDailyData = [];
     let matched = 0;
     for (const point of histTVL) {
       const dateStr = new Date(point.date * 1000).toISOString().slice(0, 10);
       const price = adaPrices[dateStr];
       if (!price || price === 0) continue;
       const tvlADA = point.tvl / price;
-      const pct = (tvlADA / TOTAL_STAKED_ADA) * 100;
-      if (pct > 0 && pct < 100) {
-        cardanoAllDailyData.push({ date: dateStr, pct });
+      const stakedPct = (tvlADA / TOTAL_STAKED_ADA) * 100;
+      const allPct = (tvlADA / CARDANO_CIRCULATING_SUPPLY) * 100;
+      if (stakedPct > 0 && stakedPct < 100) {
+        cardanoAllDailyData.push({ date: dateStr, pct: stakedPct });
+        allAdaAllDailyData.push({ date: dateStr, pct: allPct });
         matched++;
       }
     }
@@ -406,11 +484,17 @@ async function main() {
     const weekly = sampleToWeekly(cardanoAllDailyData);
     renderCardanoChart(weekly);
 
+    const weeklyAllAda = sampleToWeekly(allAdaAllDailyData);
+    renderAllAdaChart(weeklyAllAda);
+
     const from = cardanoAllDailyData.length > 0 ? cardanoAllDailyData[0].date : 'N/A';
     const to = cardanoAllDailyData.length > 0 ? cardanoAllDailyData[cardanoAllDailyData.length - 1].date : 'N/A';
     $('cardano-chart-status').textContent =
       matched + ' daily data points (' + from + ' to ' + to + '), showing ' + weekly.length + ' weekly samples. ' +
       'Price data covers last ~365 days (CoinGecko free tier limit).';
+    $('all-ada-chart-status').textContent =
+      matched + ' daily data points (' + from + ' to ' + to + '), showing ' + weeklyAllAda.length + ' weekly samples. ' +
+      'Uses circulating supply (36B ADA) as denominator.';
   } catch (err) {
     console.error('Cardano historical error:', err);
     $('cardano-chart-status').textContent = 'Error: ' + err.message;

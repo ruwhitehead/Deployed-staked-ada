@@ -126,6 +126,13 @@ main {
   margin-top: 0.25rem;
 }
 
+.detail.usd-equiv {
+  color: var(--success);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-top: 0.4rem;
+}
+
 /* Methodology */
 .methodology {
   background: var(--surface);
@@ -228,6 +235,28 @@ main {
 .duration-btn.active {
   background: var(--accent);
   border-color: var(--accent);
+  color: #fff;
+}
+
+.duration-btn-b {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.duration-btn-b:hover {
+  border-color: #a78bfa;
+  color: var(--text);
+}
+
+.duration-btn-b.active {
+  background: #a78bfa;
+  border-color: #a78bfa;
   color: #fff;
 }
 

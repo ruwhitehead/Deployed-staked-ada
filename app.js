@@ -342,6 +342,12 @@ async function main() {
     $('tvl-usd').textContent = '$' + fmt(currentTvlUSD);
     $('tvl-ada').textContent = fmt(currentTvlADA) + ' ADA';
     $('staked-ada').textContent = fmt(TOTAL_STAKED_ADA) + ' ADA';
+
+    // Staked ADA dollar value
+    const stakedAdaUSD = TOTAL_STAKED_ADA * adaPrice;
+    $('staked-ada-usd').textContent = '$' + fmt(stakedAdaUSD);
+    $('staked-ada-usd-detail').textContent = fmt(TOTAL_STAKED_ADA) + ' ADA × $' + adaPrice.toFixed(4) + ' per ADA';
+
     $('ada-price').textContent = '$' + adaPrice.toFixed(4);
     $('target-progress').textContent = 'Current: $' + fmt(currentTvlUSD) + ' (' + ((currentTvlUSD / TARGET_TVL_USD) * 100).toFixed(1) + '% of target)';
 

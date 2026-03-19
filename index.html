@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deployed Staked ADA Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Deployed Staked ADA Dashboard</h1>
+    <p class="subtitle">Tracking how much staked ADA is actively deployed in Cardano DeFi</p>
+  </header>
+
+  <main>
+    <!-- Current Snapshot -->
+    <section class="snapshot">
+      <div class="card highlight">
+        <h2>Cardano: Staked ADA Deployed</h2>
+        <div class="big-number" id="cardano-pct">Loading&hellip;</div>
+        <p class="detail" id="cardano-detail"></p>
+      </div>
+      <div class="card">
+        <h2>TVL (USD)</h2>
+        <div class="big-number secondary" id="tvl-usd">—</div>
+      </div>
+      <div class="card">
+        <h2>TVL (ADA)</h2>
+        <div class="big-number secondary" id="tvl-ada">—</div>
+      </div>
+      <div class="card">
+        <h2>Total Staked ADA</h2>
+        <div class="big-number secondary" id="staked-ada">—</div>
+      </div>
+      <div class="card">
+        <h2>ADA Price</h2>
+        <div class="big-number secondary" id="ada-price">—</div>
+      </div>
+      <div class="card">
+        <h2>2030 TVL Target</h2>
+        <div class="big-number secondary">$3B</div>
+        <p class="detail" id="target-progress"></p>
+      </div>
+    </section>
+
+    <!-- Methodology -->
+    <section class="methodology">
+      <h3>Methodology</h3>
+      <p><strong>Cardano Deployed %</strong> = (DeFi TVL in ADA &divide; Total Staked ADA) &times; 100</p>
+      <p><strong>Other Ecosystems</strong> = (DeFi TVL in USD &divide; Market Cap) &times; 100</p>
+      <p class="sources">Data sources: <a href="https://defillama.com/chain/Cardano" target="_blank">DefiLlama</a> (TVL), <a href="https://www.coingecko.com/" target="_blank">CoinGecko</a> (prices &amp; market caps), <a href="https://cexplorer.io/" target="_blank">Cexplorer</a> (staking reference)</p>
+    </section>
+
+    <!-- Chart 1: Cardano historical -->
+    <section class="chart-section">
+      <h2>Cardano: % Staked ADA Deployed Over Time (Weekly)</h2>
+      <div class="chart-container">
+        <canvas id="cardano-chart"></canvas>
+      </div>
+      <p class="chart-note">Uses historical TVL from DefiLlama, ADA price from CoinGecko, and an estimated 60% staking ratio (36B circulating supply). Weekly data points.</p>
+    </section>
+
+    <!-- Chart 2: Multi-chain comparison -->
+    <section class="chart-section">
+      <h2>Ecosystem Comparison: TVL / Market Cap Over Time (Monthly)</h2>
+      <div class="chart-container wide">
+        <canvas id="comparison-chart"></canvas>
+      </div>
+      <p class="chart-note">Deployment ratio = TVL &divide; Market Cap for each chain. Monthly data points. Cardano uses staked-ADA-based metric for consistency with the primary dashboard.</p>
+    </section>
+
+    <!-- Current comparison bar chart -->
+    <section class="chart-section">
+      <h2>Current Deployment % by Ecosystem</h2>
+      <div class="chart-container">
+        <canvas id="bar-chart"></canvas>
+      </div>
+    </section>
+
+    <footer>
+      <p>Dashboard built to support the <em>"Making sure staked ADA is deployed in the ecosystem"</em> initiative. Data refreshes on each page load.</p>
+      <p>Last updated: <span id="last-updated"></span></p>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

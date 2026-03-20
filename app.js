@@ -100,6 +100,7 @@ async function getHistoricalTVL(chain) {
 
 // Categories that are NOT DeFi — exclude from protocol breakdown
 const EXCLUDED_CATEGORIES = ['CEX', 'CeFi', 'Chain'];
+const EXCLUDED_PROTOCOLS = ['Wan Bridge'];
 
 // Protocol chart colors
 const PROTOCOL_COLORS = [
@@ -113,7 +114,8 @@ async function getCardanoProtocols() {
   return allProtocols
     .filter(p =>
       p.chains && p.chains.includes('Cardano') &&
-      !EXCLUDED_CATEGORIES.includes(p.category)
+      !EXCLUDED_CATEGORIES.includes(p.category) &&
+      !EXCLUDED_PROTOCOLS.includes(p.name)
     )
     .map(p => {
       let tvl = 0;

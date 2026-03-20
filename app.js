@@ -130,7 +130,10 @@ async function getCardanoProtocols() {
         logo: p.logo,
       };
     })
-    .filter(p => p.tvl > 0)
+    // Minimum $1,000 TVL threshold to filter out protocols that list Cardano
+    // as a chain but have no meaningful deployment (e.g. KAIO lists 14 chains
+    // but only has TVL on Sui/Near). This matches DefiLlama website behaviour.
+    .filter(p => p.tvl >= 1000)
     .sort((a, b) => b.tvl - a.tvl);
 }
 

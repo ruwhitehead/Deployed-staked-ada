@@ -162,6 +162,27 @@
       <p class="chart-note">All chains: TVL &divide; Market Cap. Consistent metric for cross-ecosystem comparison.</p>
     </section>
 
+    <!-- Protocol breakdown -->
+    <section class="chart-section">
+      <h2>Cardano DeFi TVL by Protocol</h2>
+      <div class="protocol-layout">
+        <div class="chart-container protocol-pie">
+          <canvas id="protocol-chart"></canvas>
+        </div>
+        <div class="protocol-table-wrapper">
+          <table class="protocol-table">
+            <thead>
+              <tr><th>Protocol</th><th>Category</th><th>TVL (USD)</th><th>Share</th></tr>
+            </thead>
+            <tbody id="protocol-tbody">
+              <tr><td colspan="4" style="text-align:center;color:#9ca3af">Loading&hellip;</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="chart-note">Source: <a href="https://defillama.com/chain/Cardano" target="_blank">DefiLlama Cardano</a>. Only DeFi protocols listed on the Cardano chain page are included (CEX/CeFi excluded). Click protocol names to view on DefiLlama.</p>
+    </section>
+
     <footer>
       <p>Dashboard built to support the <em>"Making sure staked ADA is deployed in the ecosystem"</em> initiative. Data refreshes on each page load.</p>
       <p>Last updated: <span id="last-updated"></span></p>

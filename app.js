@@ -98,6 +98,43 @@ async function getHistoricalTVL(chain) {
   return fetchWithCache(`https://api.llama.fi/v2/historicalChainTvl/${chain}`, `cache-hist-${chain}`);
 }
 
+// Categories that are NOT DeFi — exclude from protocol breakdown
+const EXCLUDED_CATEGORIES = ['CEX', 'CeFi', 'Chain'];
+
+// Protocol chart colors
+const PROTOCOL_COLORS = [
+  '#3cc8c8', '#627eea', '#9945ff', '#f0b90b', '#ff6b6b', '#28a0f0',
+  '#8247e5', '#e84142', '#ff0420', '#6fbcf0', '#4cd7b0', '#c4a6ff',
+  '#33ff99', '#f59e0b', '#22c55e', '#ef4444', '#a78bfa', '#60a5fa',
+];
+
+async function getCardanoProtocols() {
+  const allProtocols = await fetchWithCache('https://api.llama.fi/protocols', 'cache-protocols');
+  return allProtocols
+    .filter(p =>
+      p.chains && p.chains.includes('Cardano') &&
+      !EXCLUDED_CATEGORIES.includes(p.category)
+    )
+    .map(p => {
+      let tvl = 0;
+      if (p.chainTvls) {
+        if (typeof p.chainTvls.Cardano === 'number') {
+          tvl = p.chainTvls.Cardano;
+        } else if (typeof p.chainTvls.Cardano === 'object' && p.chainTvls.Cardano !== null) {
+          tvl = p.chainTvls.Cardano.tvl || 0;
+        }
+      }
+      return {
+        name: p.name,
+        tvl: tvl,
+        category: p.category || 'Other',
+        slug: p.slug || '',
+      };
+    })
+    .filter(p => p.tvl >= 1000)
+    .sort((a, b) => b.tvl - a.tvl);
+}
+
 /** CoinGecko: current prices + market caps for all chains in one call */
 async function getCurrentMarketData() {
   const ids = [...new Set(Object.values(CHAINS).map(c => c.geckoId))].join(',');
@@ -136,6 +173,7 @@ async function getHistoricalMarketData(geckoId) {
 // ── Chart state ────────────────────────────────────────────────────────────
 let cardanoChartInstance = null;
 let allAdaChartInstance = null;
+let protocolChartInstance = null;
 let targetChartInstance = null;
 let barChartInstance = null;
 let comparisonChartInstance = null;
@@ -379,6 +417,64 @@ function renderBarChart(chainData) {
       }
     }
   });
+}
+
+function renderProtocolChart(protocols) {
+  if (protocolChartInstance) protocolChartInstance.destroy();
+
+  const top = protocols.slice(0, 15);
+  const otherTvl = protocols.slice(15).reduce((sum, p) => sum + p.tvl, 0);
+  if (otherTvl > 0) top.push({ name: 'Other', tvl: otherTvl, category: '', slug: '' });
+
+  const totalTvl = top.reduce((sum, p) => sum + p.tvl, 0);
+
+  protocolChartInstance = new Chart($('protocol-chart').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: top.map(p => p.name),
+      datasets: [{
+        data: top.map(p => p.tvl),
+        backgroundColor: top.map((_, i) => PROTOCOL_COLORS[i % PROTOCOL_COLORS.length]),
+        borderColor: '#1a1d27',
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: c => {
+              const val = c.parsed;
+              const pct = ((val / totalTvl) * 100).toFixed(1);
+              return c.label + ': $' + fmt(val) + ' (' + pct + '%)';
+            }
+          }
+        },
+      }
+    }
+  });
+
+  // Protocol table with clickable links
+  const tbody = $('protocol-tbody');
+  tbody.innerHTML = '';
+  for (let i = 0; i < top.length; i++) {
+    const p = top[i];
+    const pct = ((p.tvl / totalTvl) * 100).toFixed(1);
+    const color = PROTOCOL_COLORS[i % PROTOCOL_COLORS.length];
+    const row = document.createElement('tr');
+    const nameCell = p.slug
+      ? '<a class="protocol-link" href="https://defillama.com/protocol/' + p.slug + '" target="_blank">' + p.name + '</a>'
+      : p.name;
+    row.innerHTML =
+      '<td><span class="protocol-color" style="background:' + color + '"></span>' + nameCell + '</td>' +
+      '<td>' + p.category + '</td>' +
+      '<td>$' + fmt(p.tvl) + '</td>' +
+      '<td>' + pct + '%</td>';
+    tbody.appendChild(row);
+  }
 }
 
 function renderTargetChart(histTVL, currentTvlUSD) {
@@ -694,6 +790,16 @@ async function main() {
     console.error('Snapshot error:', err);
     $('cardano-pct').textContent = 'Error';
     $('data-status').textContent = 'Error loading snapshot';
+  }
+
+  // ── 1b. Protocol breakdown ─────────────────────────────────────────────
+  try {
+    const protocols = await getCardanoProtocols();
+    if (protocols.length > 0) {
+      renderProtocolChart(protocols);
+    }
+  } catch (err) {
+    console.error('Protocol error:', err);
   }
 
   // ── 2. Cardano historical chart (weekly) ───────────────────────────────

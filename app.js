@@ -104,10 +104,17 @@ async function getHistoricalTVL(chain) {
   return fetchWithCache(`https://api.llama.fi/v2/historicalChainTvl/${chain}`, `cache-hist-${chain}`);
 }
 
+// Categories that are NOT DeFi — these hold assets but don't represent
+// ADA being "deployed" in the ecosystem (e.g. exchange wallets, CeFi).
+const EXCLUDED_CATEGORIES = ['CEX', 'CeFi', 'Chain'];
+
 async function getCardanoProtocols() {
   const allProtocols = await fetchWithCache('https://api.llama.fi/protocols', 'cache-protocols');
   return allProtocols
-    .filter(p => p.chains && p.chains.includes('Cardano'))
+    .filter(p =>
+      p.chains && p.chains.includes('Cardano') &&
+      !EXCLUDED_CATEGORIES.includes(p.category)
+    )
     .map(p => {
       // Use the Cardano-specific TVL, excluding staking/borrowed/pool2
       // to match DefiLlama's default website view.

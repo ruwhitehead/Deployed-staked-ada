@@ -53,6 +53,11 @@
         <div class="big-number secondary" id="staked-ada-usd">&mdash;</div>
         <p class="detail" id="staked-ada-usd-detail"></p>
       </div>
+      <div class="card highlight-warning">
+        <h2>% of ADA Unstaked</h2>
+        <div class="big-number secondary" id="unstaked-pct">&mdash;</div>
+        <p class="detail" id="unstaked-detail"></p>
+      </div>
       <div class="card">
         <h2>ADA Price</h2>
         <div class="big-number secondary" id="ada-price">&mdash;</div>
@@ -108,27 +113,6 @@
         <canvas id="all-ada-chart"></canvas>
       </div>
       <p class="chart-note" id="all-ada-chart-status">Loading historical data&hellip;</p>
-    </section>
-
-    <!-- Chart: Protocol breakdown -->
-    <section class="chart-section">
-      <h2>Cardano DeFi TVL by Protocol</h2>
-      <div class="protocol-layout">
-        <div class="chart-container protocol-pie">
-          <canvas id="protocol-chart"></canvas>
-        </div>
-        <div class="protocol-table-wrapper">
-          <table class="protocol-table">
-            <thead>
-              <tr><th>Protocol</th><th>TVL (USD)</th><th>Share</th></tr>
-            </thead>
-            <tbody id="protocol-tbody">
-              <tr><td colspan="3" style="text-align:center;color:#9ca3af">Loading&hellip;</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <p class="chart-note">Source: DefiLlama protocols API. Shows where deployed ADA is concentrated.</p>
     </section>
 
     <!-- Chart 2: Multi-chain comparison -->

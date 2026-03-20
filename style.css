@@ -145,6 +145,17 @@ main {
   font-weight: 800;
 }
 
+.card.highlight-warning {
+  border-color: #f59e0b;
+  background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(234,88,12,0.08));
+}
+
+.card.highlight-warning .big-number {
+  color: #f59e0b;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
 .big-number {
   font-size: 2.8rem;
   font-weight: 800;

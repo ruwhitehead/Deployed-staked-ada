@@ -769,6 +769,12 @@ async function main() {
     $('staked-ada-usd').textContent = '$' + fmt(stakedAdaUSD);
     $('staked-ada-usd-detail').textContent = fmt(TOTAL_STAKED_ADA) + ' ADA x $' + adaPrice.toFixed(4) + ' per ADA';
 
+    // Unstaked ADA %
+    const unstakedADA = CARDANO_CIRCULATING_SUPPLY - TOTAL_STAKED_ADA;
+    const unstakedPct = (unstakedADA / CARDANO_CIRCULATING_SUPPLY) * 100;
+    $('unstaked-pct').textContent = unstakedPct.toFixed(1) + '%';
+    $('unstaked-detail').textContent = fmt(unstakedADA) + ' ADA unstaked (' + fmt(unstakedADA * adaPrice, 2) + ' USD)';
+
     $('ada-price').textContent = '$' + adaPrice.toFixed(4);
     $('target-progress').textContent = 'Current: $' + fmt(currentTvlUSD) + ' (' + ((currentTvlUSD / TARGET_TVL_USD) * 100).toFixed(1) + '% of target)';
 
@@ -790,16 +796,6 @@ async function main() {
     console.error('Snapshot error:', err);
     $('cardano-pct').textContent = 'Error';
     $('data-status').textContent = 'Error loading snapshot';
-  }
-
-  // ── 1b. Protocol breakdown ─────────────────────────────────────────────
-  try {
-    const protocols = await getCardanoProtocols();
-    if (protocols.length > 0) {
-      renderProtocolChart(protocols);
-    }
-  } catch (err) {
-    console.error('Protocol error:', err);
   }
 
   // ── 2. Cardano historical chart (weekly) ───────────────────────────────

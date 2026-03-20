@@ -100,7 +100,7 @@ async function getHistoricalTVL(chain) {
 
 // Categories that are NOT DeFi — exclude from protocol breakdown
 const EXCLUDED_CATEGORIES = ['CEX', 'CeFi', 'Chain'];
-const EXCLUDED_PROTOCOLS = ['Wan Bridge'];
+const EXCLUDED_PROTOCOLS = ['Wan Bridge', 'Rosen Bridge'];
 
 // Protocol chart colors
 const PROTOCOL_COLORS = [

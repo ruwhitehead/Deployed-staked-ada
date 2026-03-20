@@ -107,13 +107,30 @@ async function getHistoricalTVL(chain) {
 async function getCardanoProtocols() {
   const allProtocols = await fetchWithCache('https://api.llama.fi/protocols', 'cache-protocols');
   return allProtocols
-    .filter(p => p.chains && p.chains.includes('Cardano') && p.tvl > 0)
-    .map(p => ({
-      name: p.name,
-      tvl: p.chainTvls && p.chainTvls.Cardano ? p.chainTvls.Cardano : p.tvl,
-      category: p.category || 'Other',
-      logo: p.logo,
-    }))
+    .filter(p => p.chains && p.chains.includes('Cardano'))
+    .map(p => {
+      // Use the Cardano-specific TVL, excluding staking/borrowed/pool2
+      // to match DefiLlama's default website view.
+      // chainTvls may contain: "Cardano", "Cardano-staking", "Cardano-borrowed", "Cardano-pool2"
+      // We want ONLY the base "Cardano" value (which excludes those sub-categories).
+      let tvl = 0;
+      if (p.chainTvls) {
+        // Use the base Cardano key only (not Cardano-staking, Cardano-borrowed, etc.)
+        if (typeof p.chainTvls.Cardano === 'number') {
+          tvl = p.chainTvls.Cardano;
+        } else if (typeof p.chainTvls.Cardano === 'object' && p.chainTvls.Cardano !== null) {
+          // Some protocols return an object with tvl sub-key
+          tvl = p.chainTvls.Cardano.tvl || 0;
+        }
+      }
+      return {
+        name: p.name,
+        tvl: tvl,
+        category: p.category || 'Other',
+        logo: p.logo,
+      };
+    })
+    .filter(p => p.tvl > 0)
     .sort((a, b) => b.tvl - a.tvl);
 }
 

@@ -28,7 +28,7 @@ Just open `index.html` in a browser. No build step required — it's a static si
 
 ## Deployment
 
-Hosted via GitHub Pages. Visit the live dashboard at the repository's GitHub Pages URL.
+Hosted via GitHub Pages. Visit the live dashboard at the repository's GitHub Pages URL. https://ruwhitehead.github.io/Deployed-staked-ada/ 
 
 ## Background
 
